@@ -53,7 +53,7 @@
             margin-bottom: 0px;
             padding: 5px;
             font-weight: bold;
-            background-color: #13ca5e;
+            background-color: #a6cc1b;
             color: white;
             border-radius: 4px;
             text-align: center;
@@ -374,19 +374,134 @@
 
 <body>
     <div class="container">
-        <h1>アンケート</h1>
-        <div class="info-text">以下全て入力後<br>【アンケート送信】ボタンを押してください。</div>
+        <h1>占屋伊千夜<br>予約フォーム</h1>
+        <div class="info-text">より詳細な予約はチャットにてお願いします<br>例：4名様以上、ひとり60分以上、<br>深夜0〜3時の予約等</div>
         <div class="label2">お名前　※必須</div>
         <input type="text" id="name1" placeholder="お名前を入力してください">
 
-        <div class="label2">電話番号　※必須</div>
+        <div class="label2">生年月日　例：19940107　※必須</div>
         <input type="tel" id="dateofbirth1" placeholder="生年月日を入力してください">
 
-        <div class="label2">ご住所　※必須</div>
+        <div class="label2">二人目のお名前</div>
         <input type="text" id="name2" placeholder="お名前を入力してください">
 
-        <div class="label2">生年月日　※必須</div>
+        <div class="label2">二人目の生年月日</div>
         <input type="tel" id="dateofbirth2" placeholder="生年月日を入力してください">
+
+        <div class="label2">三人目のお名前</div>
+        <input type="text" id="name3" placeholder="お名前を入力してください">
+
+        <div class="label2">三人目の生年月日</div>
+        <input type="tel" id="dateofbirth3" placeholder="生年月日を入力してください">
+
+        <div class="label">ご来店回数</div>
+        <div class="visit-buttons">
+            <button type="button" id="firstVisit" onclick="selectVisit(this)">1回目</button>
+            <button type="button" id="repeatVisit" onclick="selectVisit(this)">2回目以降</button>
+        </div>
+
+        <div class="label">メニューをお選びください</div>
+        <div class="menu-sections">
+            <button type="button" onclick="showMenu('male')">1名様</button>
+            <button type="button" onclick="showMenu('female')">2名様</button>
+            <button type="button" onclick="showMenu('whitening')">3名様</button>
+        </div>
+
+        <div id="treatment-text" style="margin-bottom: 20px;"></div>
+
+        <div id="male" class="menu-section">
+            <div class="highlight-background">
+                <span class="highlight-text">◆1名様◆</span>
+            </div>
+            <div class="symptoms">
+                <button type="button" onclick="selectSymptom(this, 'treatment1')" data-price="15000">10分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment2')" data-price="15000">20分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment3')" data-price="15000">30分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment4')" data-price="15000">40分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment5')" data-price="15000">50分鑑定</button>
+            </div>
+            <div class="highlight-background">
+                <span class="highlight-text">オプション</span>
+            </div>
+            <div class="irradiations">
+                <button type="button" id="firstirradiations" onclick="selectirradiations(this)"
+                    data-price="15000">電話鑑定</button>
+                <button type="button" id="firstirradiations" onclick="selectirradiations(this)"
+                    data-price="15000">ビデオ通話鑑定</button>
+            </div>
+        </div>
+
+        <div id="female" class="menu-section">
+            <div class="highlight-background">
+                <span class="highlight-text">◆2名様◆</span>
+            </div>
+            <div class="symptoms">
+                <button type="button" onclick="selectSymptom(this, 'treatment6')"
+                    data-price="15000">10分ずつ計20分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment7')"
+                    data-price="15000">20分ずつ計40分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment8')"
+                    data-price="15000">30分ずつ計60分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment9')"
+                    data-price="15000">40分ずつ計80分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment10')"
+                    data-price="15000">50分ずつ計100分鑑定</button>
+            </div>
+        </div>
+
+        <div id="whitening" class="menu-section">
+            <div class="highlight-background">
+                <span class="highlight-text">◆3名様◆</span>
+            </div>
+            <div class="symptoms">
+                <button type="button" onclick="selectSymptom(this, 'treatment11')"
+                    data-price="15000">10分ずつ計30分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment12')"
+                    data-price="15000">20分ずつ計60分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment13')"
+                    data-price="15000">30分ずつ計90分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment14')"
+                    data-price="15000">40分ずつ計120分鑑定</button>
+                <button type="button" onclick="selectSymptom(this, 'treatment15')"
+                    data-price="15000">50分ずつ計150分鑑定</button>
+            </div>
+        </div>
+
+        <div class="label">希望日時</div>
+        <div class="info-textmemo">深夜０〜３時の予約は<br>チャットにてお持ちしております。</div>
+        <div class="calendar-container">
+            <div class="week-button-container">
+                <button class="week-button" onclick="previousWeek()">前の週</button>
+                <span class="current-month" id="currentMonth">月</span>
+                <button class="week-button" onclick="nextWeek()">翌週</button>
+            </div>
+            <div id="calendar1" class="calendar">
+                <table>
+                    <thead>
+                        <tr id="calendar-header">
+                            <th>時間</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- カレンダーの内容がここに追加される -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <div class="label">メッセージ<br>（質問等お気軽にご記入ください）</div>
+        <div class="info-textmemo">深夜０〜３時の予約は<br>チャットにてお持ちしております。</div>
+        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea>
 
         <button class="submit-button" onclick="submitForm()">予約を行う</button>
     </div>
