@@ -357,7 +357,7 @@
                 text: `≪アンケート≫\n【名前】：${formData.message}\n【電話番号】：${formData.message2}\n【住所】：${formData.message3}\n【生年月日】：${formData.message4}`
             }]).then(() => {
                 /* メッセージ送信成功時の処理 */
-                alert('当日のキャンセルは無いようにお願いいたします。');
+                alert('ご記入ありがとうございます。同意書が表示されますので、ご確認ください。');
                 /* LIFFウィンドウを閉じる */
                 liff.closeWindow();
             }).catch((err) => {
