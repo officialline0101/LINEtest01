@@ -296,13 +296,13 @@
         <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
 
         <div class="label">電話番号</div>
-        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
+        <textarea id="message2" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
 
         <div class="label">住所</div>
-        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
+        <textarea id="message3" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
 
         <div class="label">生年月日</div>
-        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
+        <textarea id="message4" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
 
         <button class="submit-button" onclick="submitForm()">アンケート送信</button> <!-- フォーム送信ボタン -->
     </div>
@@ -392,12 +392,6 @@
         function submitForm() {
             /* フォームの入力値を取得 */
             const name = document.getElementById('name').value;
-            const name1 = document.getElementById('name').value;
-            const name2 = document.getElementById('name').value;
-            const name3 = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const date1 = formatDate(document.getElementById('date1').value);
-            const date2 = formatDate(document.getElementById('date2').value);
             const message = document.getElementById('message').value;
             const message2 = document.getElementById('message2').value;
             const message3 = document.getElementById('message3').value;
@@ -405,16 +399,6 @@
 
             /* フォームデータをオブジェクトにまとめる */
             const formData = {
-                name,
-                name2,
-                name3,
-                name4,
-                phone,
-                visitCount,
-                mrCount,
-                selectedSymptom,
-                irradiationsCount,
-                dates: [date1, date2],
                 message,
                 message2,
                 message3,
