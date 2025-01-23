@@ -1,361 +1,464 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja"> <!-- HTML文書の言語を日本語に設定 -->
+
 <head>
-<base target="_top">
-<meta http-equiv="content-type" charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue@3.2/dist/vue.global.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-  <!-- vue 3 Datapicker css -->
-  <link rel="stylesheet" href="https://unpkg.com/@vuepic/vue-datepicker@latest/dist/main.css">
-
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-<style>
-    .dp__button {
-        display: none;
-    }
-    * {
-    	font-family:"游ゴシック Medium",YuGothic,YuGothicM,"Hiragino Kaku Gothic ProN","Hiragino Kaku Gothic Pro",メイリオ,Meiryo,sans-serif;
-      }
-    body {
-    	margin:0;
-    }
-    header {
-    	padding: 5px;
-    	background-color: #333;
-    	position: relative;
-    }
-    h2 {
-    	text-align:center;
-    	color: #fff;
-    	margin: 10px;
-    }
-    .btn-group>.btn, .btn-group-vertical>.btn {
-        float: none;
-        display: inline-block;
-    }
-    .btn-info {
-        color: #fff;
-        background-color: #333;
-        border-color: #FFF;
-    }
-    .btn-info:focus, .btn-info:active, .btn-info.active, .open>.dropdown-toggle.btn-info, .check {
-        color: #333;
-        background-color: #fff;
-        border: solid 2px #333;
-    }
-    .container {
-    	margin: 40px 0;
-    }
-    .form-group {
-        margin-bottom: 20px;
-    }
-    .use-span {
-    	width: 25%;
-    	font-size: 12px;
-    	padding: 6px;
-    	text-align: center;
-    }
-    .regist {
-    	background:red;
-    	border-color:red;
-    	width: 100%;
-    	padding: 20px 0;
-    	margin: 20px 0;
-    	color: #FFFFFF;
-    }
-    #error{
-        display:none;
-    }
-    #section { display: none; }
-    #family_count { display: none; }
-    .dp__input {
-        display: block;
-        
-        width: 100%;
-        height: 34px;
-        padding: 6px 12px;
-        padding-left: 24px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #555;
-        background-color: #fff;
-        background-image: none;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
-        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-    }
-    .dp__action_buttons {
-        flex:auto;
-    }
-    input[type=radio] {
-        display: none;
-    }
-</style>
-</head>
-<body>
-<header>
-	<h2>予約フォーム</h2>
-</header>
-<section id="app">
-	<div class="container" id="bring">
-        <!-- <form id="apply"> -->
-
-            <!-- customer_name -->  
-            <div class="form-group">
-                <label>お客様名（カタカナ）</label>
-                <input v-model="name" type="text" name="customer_name" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label>電話番号</label>
-                <input v-model="tel" type="text" name="customer_tel" class="form-control" required>
-            </div>
-
-            <!-- place -->
-            <div class="form-group">
-                <label>ご来店回数</label>
-                <div class="btn-group" style="width:100%;">
-                    <label class="btn btn-info" style="width: 49%;" for="first" :class="number === '初めて' ? 'check' : ''">
-                        <input value="初めて" type="radio" v-model="number" id="first">初めて
-                    </label>
-                    <label class="btn btn-info" style="width: 49%;" for="second" :class="number === '2回目以降' ? 'check' : ''">
-                        <input value="2回目以降" type="radio" v-model="number" id="second">2回目以降
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>症状</label>
-                <div class="btn-group" style="width:100%;">
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === '頭痛・偏頭痛' ? 'check' : ''" for="one">
-                        <input name="place" value="頭痛・偏頭痛" type="radio" required v-model="syoujou" id="one">頭痛・偏頭痛
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === '交通事故施術' ? 'check' : ''" for="two">
-                        <input name="place" value="交通事故施術" type="radio" required v-model="syoujou" id="two">交通事故施術
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === '肩こり・腕のしびれ' ? 'check' : ''" for="three">
-                        <input name="place" value="肩こり・腕のしびれ" type="radio" required v-model="syoujou" id="three">肩こり・腕のしびれ
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === '臀部・下肢の痛みや痺れ' ? 'check' : ''" for="four">
-                        <input name="place" value="臀部・下肢の痛みや痺れ" type="radio" required v-model="syoujou" id="four">臀部・下肢の痛みや痺れ
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === 'ぎっくり腰・慢性腰痛' ? 'check' : ''" for="five">
-                        <input name="place" value="ぎっくり腰・慢性腰痛" type="radio" required v-model="syoujou" id="five">ぎっくり腰・慢性腰痛
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === '寝違い・むち打ち等首の症状' ? 'check' : ''" for="six">
-                        <input name="place" value="寝違い・むち打ち等首の症状" type="radio" required v-model="syoujou" id="six">寝違い・むち打ち等首の症状
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === 'EMS(電気的筋肉刺激装置)トレーニング' ? 'check' : ''" for="six">
-                        <input name="place" value="EMS(電気的筋肉刺激装置)トレーニング" type="radio" required v-model="syoujou" id="six">EMS(電気的筋肉刺激装置)トレーニング
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === '健康保険の施術' ? 'check' : ''" for="six">
-                        <input name="place" value="健康保険の施術" type="radio" required v-model="syoujou" id="six">健康保険の施術
-                    </label>
-                    <label class="btn btn-info" style="width: 100%;" :class="syoujou === 'その他' ? 'check' : ''" for="seven">
-                        <input name="place" value="その他" type="radio" required v-model="syoujou" id="seven">その他
-                    </label>
-                </div>
-            </div>
-
-            <!-- date -->
-            <div class="form-group">
-                <label>第1希望日</label>
-                <div class="form-group">
-                    <Datepicker v-model="datepicker1" placeholder="クリックして日時を入力" locale="jp" select-text="選択する" cancel-text="キャンセル" format="yyyy年MM月dd日" :disabled-week-days="[0]"></Datepicker>
-                </div>
-                <select class="form-control" v-model="datepicker1time">
-                    <option value="08:30">08:30</option>
-                    <option value="09:00">09:00</option>
-                    <option value="09:30">09:30</option>
-                    <option value="10:00">10:00</option>
-                    <option value="10:30">10:30</option>
-                    <option value="11:00">11:00</option>
-                    <option value="11:30">11:30</option>
-                    <option value="12:00">12:00</option>
-                    <option value="15:00">15:00</option>
-                    <option value="15:30">15:30</option>
-                    <option value="16:00">16:00</option>
-                    <option value="16:30">16:30</option>
-                    <option value="17:00">17:00</option>
-                    <option value="17:30">17:30</option>
-                    <option value="18:00">18:00</option>
-                    <option value="18:30">18:30</option>
-                    <option value="19:00">19:00</option>
-                    <option value="19:30">19:30</option>
-                </select>
-            </div>
-            <!-- date -->
-            <div class="form-group">
-                <label>第2希望日</label>
-                <div class="form-group">
-                    <Datepicker v-model="datepicker2" placeholder="クリックして日時を入力" locale="jp" select-text="選択する" cancel-text="キャンセル" format="yyyy年MM月dd日" :disabled-week-days="[0]"></Datepicker>
-                </div>
-                <select class="form-control" v-model="datepicker2time">
-                    <option value="08:30">08:30</option>
-                    <option value="09:00">09:00</option>
-                    <option value="09:30">09:30</option>
-                    <option value="10:00">10:00</option>
-                    <option value="10:30">10:30</option>
-                    <option value="11:00">11:00</option>
-                    <option value="11:30">11:30</option>
-                    <option value="12:00">12:00</option>
-                    <option value="15:00">15:00</option>
-                    <option value="15:30">15:30</option>
-                    <option value="16:00">16:00</option>
-                    <option value="16:30">16:30</option>
-                    <option value="17:00">17:00</option>
-                    <option value="17:30">17:30</option>
-                    <option value="18:00">18:00</option>
-                    <option value="18:30">18:30</option>
-                    <option value="19:00">19:00</option>
-                    <option value="19:30">19:30</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>第3希望日</label>
-                <div class="form-group">
-                    <Datepicker v-model="datepicker3" placeholder="クリックして日時を入力" locale="jp" select-text="選択する" cancel-text="キャンセル" format="yyyy年MM月dd日" :disabled-week-days="[0]"></Datepicker>
-                </div>
-                <select class="form-control" v-model="datepicker3time">
-                    <option value="08:30">08:30</option>
-                    <option value="09:00">09:00</option>
-                    <option value="09:30">09:30</option>
-                    <option value="10:00">10:00</option>
-                    <option value="10:30">10:30</option>
-                    <option value="11:00">11:00</option>
-                    <option value="11:30">11:30</option>
-                    <option value="12:00">12:00</option>
-                    <option value="15:00">15:00</option>
-                    <option value="15:30">15:30</option>
-                    <option value="16:00">16:00</option>
-                    <option value="16:30">16:30</option>
-                    <option value="17:00">17:00</option>
-                    <option value="17:30">17:30</option>
-                    <option value="18:00">18:00</option>
-                    <option value="18:30">18:30</option>
-                    <option value="19:00">19:00</option>
-                    <option value="19:30">19:30</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>メッセージ<small>（質問等お気軽にご記入ください）</small></label>
-                <textarea v-model="message" name="customer_message" class="form-control" required rows="6"></textarea>
-            </div>
-
-            <button type="submit" class="btn regist" v-on:click="done()" :disabled="name == '' || syoujou == '' || number == '' || tel == '' ">予約を行う</button>
-        <!-- </form> -->
-	</div>
-</section>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<!-- vue 3 Datapicker js -->
-<script src="https://unpkg.com/@vuepic/vue-datepicker@latest"></script>
-<script>
-  liff.init(
-    data => {
-      var userId = data.context.userId;
-      console.log(userId);
-    });
-</script>
-
-<script>
-    const app = {
-        data() {
-            return {
-                datepicker1: '',
-                datepicker2: '',
-                datepicker3: '',
-                datepicker1time: '',
-                datepicker2time: '',
-                datepicker3time: '',
-                name: "",
-                syoujou: "",
-                number: "",
-                tel: "",
-                message: ""
-            }
-        },
-        components: {
-            Datepicker: VueDatePicker
-        },
-        methods: {
-            get () {
-                let url = new URL(window.location.href);
-                let params = url.searchParams;
-
-                let syoujou = params.get('name');
-                this.syoujou = syoujou;
-            },
-            done () {
-                var date1 = new Date(this.datepicker1);
-                var date2 = new Date(this.datepicker2);
-                var date3 = new Date(this.datepicker3);
-
-                var datetime1 = date1.getFullYear() + "年" + (date1.getMonth() + 1) + "月" + date1.getDate() + "日 " + this.datepicker1time;
-                var datetime2 = date2.getFullYear() + "年" + (date2.getMonth() + 1) + "月" + date2.getDate() + "日 " + this.datepicker2time;
-                var datetime3 = date3.getFullYear() + "年" + (date3.getMonth() + 1) + "月" + date3.getDate() + "日 " + this.datepicker3time;
-
-                var date = "";
-
-                if (this.datepicker1 !== "" && this.datepicker1time !== ""){
-                    date = date + "\n" +  datetime1 
-                }
-                if (this.datepicker2 !== "" && this.datepicker2time !== ""){
-                    date = date + "\n" +  datetime2
-                }
-                if (this.datepicker3 !== "" && this.datepicker3time !== ""){
-                    date = date + "\n" +  datetime3
-                }
-
-               liff.sendMessages([
-    {
-      type: "text",
-      text: "【予約フォーム】" + "\n" + "お名前：" + this.name + "\n" + "電話番号：" + this.tel + "\n" + "症状：" + this.syoujou + "\n" + "来院有無：" + this.number  + "\n" + "希望日時：" + date + "\n" + "メッセージ：" + this.message,
-    },
-  ])
-  .then(() => {
-    console.log("message sent");
-  })
-  .catch((err) => {
-    alert("error", err);
-  })
-  .finally(()=>{
-    liff.closeWindow();
-  });
-            },
-        },
-        mounted: async function(){
-            await liff.init({
-                liffId: ""
-            }).then(()=>{
-                if (liff.isLoggedIn()) {
-                    console.log("ログイン済");
-                } else {
-                    liff.login();
-                }
-            });
-        },
-        created() {
-            this.get();
-        },
-        computed: {
+    <meta charset="UTF-8"> <!-- 文字エンコーディングをUTF-8に設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>予約フォーム</title> <!-- タイトルを「予約フォーム」に設定 -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 20px;
         }
-    }
-    Vue.createApp(app).mount('#bring')
-</script>
 
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-weight: bold;
+            background-color: #13ca5e;
+            color: white;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 5px;
+            /* 上に余白を追加 */
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .visit-buttons,
+        .symptoms,
+        .menu-sections,
+        .irradiations,
+        .mr-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .visit-buttons button,
+        .symptoms button,
+        .menu-sections button,
+        .irradiations button,
+        .mr-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f7f7f7;
+            cursor: pointer;
+            box-sizing: border-box;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .visit-buttons button.active,
+        .symptoms button.active,
+        .menu-sections button.active,
+        .irradiations button.active,
+        .mr-buttons button.active {
+            background-color: #444;
+            color: #fff;
+        }
+
+        .date-inputs input[type="datetime-local"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #ff4c4c;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .menu-section {
+            display: none;
+        }
+
+        .menu-section.active {
+            display: block;
+        }
+
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* カレンダーを中央に配置 */
+            margin-bottom: 20px;
+            position: relative;
+            width: 106%;
+            /* 横幅を広げる */
+            margin-left: -3%;
+            /* 親要素の中心にカレンダーを配置 */
+        }
+
+        .calendar {
+            flex: 1;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            /* 横スクロールを防ぐ */
+            width: 106%;
+        }
+
+        .calendar table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar th,
+        .calendar td {
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+            vertical-align: top;
+            width: 14.28%;
+            /* 7日間が一列に収まるように設定 */
+            box-sizing: border-box;
+            border: 1px solid #000;
+            /* ここで区切り線を追加 */
+        }
+
+        .calendar th {
+            background-color: #f7f7f7;
+        }
+
+        .calendar td:hover {
+            background-color: #ddd;
+        }
+
+        .calendar td.selected {
+            background-color: #444;
+            color: #fff;
+        }
+
+        .week-button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .week-button {
+            padding: 10px 20px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .current-month {
+            font-size: 16px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .available {
+            color: red;
+        }
+
+        .unavailable {
+            background-color: #d3d3d3;
+        }
+
+        .menu-section {
+            display: none;
+        }
+
+        .menu-section.active {
+            display: block;
+        }
+
+        #repairLabel,
+        #repairButtons {
+            display: none;
+        }
+
+        .highlight-background {
+            background-color: #f9f9d6;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            /* 上に余白を追加 */
+        }
+
+        .datetime-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .datetime-input {
+            width: 100%;
+            padding: 15px;
+            /* サイズを大きく調整 */
+            font-size: 18px;
+            /* フォントサイズを大きく */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .datetime-input:focus+.datetime-placeholder,
+        .datetime-input:not(:placeholder-shown)+.datetime-placeholder {
+            visibility: hidden;
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>アンケート</h1>
+        <div class="label">名前</div>
+        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
+
+        <div class="label">電話番号</div>
+        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
+
+        <div class="label">住所</div>
+        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
+
+        <div class="label">生年月日</div>
+        <textarea id="message" rows="4" placeholder="メッセージを入力してください"></textarea> <!-- メッセージ入力フィールド -->
+
+        <button class="submit-button" onclick="submitForm()">アンケート送信</button> <!-- フォーム送信ボタン -->
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script> <!-- LIFF SDKの読み込み -->
+    <script>
+        let visitCount = ''; <!-- 訪問回数を格納する変数 -->
+        let mrCount = ''; < !--訪問回数を格納する変数 -->
+            let selectedSymptom = ''; < !--選択された症状を格納する変数 -->
+                let irradiationsCount = ''; < !--選択された症状を格納する変数 -->
+
+                    // LIFF初期化
+                    document.addEventListener('DOMContentLoaded', function () {
+                        liff.init({
+                            liffId: '2006421896-Dz9B3O1p' // ここにあなたのLIFF IDを入力
+                        }).then(() => {
+                            // LIFF初期化成功時の処理
+                            console.log('LIFF初期化成功');
+                        }).catch((err) => {
+                            // LIFF初期化失敗時の処理
+                            console.error('LIFF初期化失敗', err);
+                        });
+                    });
+
+        // プレースホルダーを非表示にする関数
+        function hidePlaceholder(placeholderId) {
+            document.getElementById(placeholderId).style.display = 'none';
+        }
+
+        // プレースホルダーを表示する関数（入力がない場合）
+        function showPlaceholder(inputId, placeholderId) {
+            const input = document.getElementById(inputId);
+            if (!input.value) {
+                document.getElementById(placeholderId).style.display = 'inline';
+            }
+        }
+
+        function selectVisit(element) {
+            /* 訪問回数ボタンの選択状態をリセット */
+            document.getElementById('firstVisit').classList.remove('active');
+            document.getElementById('repeatVisit').classList.remove('active');
+            /* クリックされたボタンを選択状態にする */
+            element.classList.add('active');
+            /* 選択された訪問回数を変数に格納 */
+            visitCount = element.innerText;
+        }
+
+        function selectmr(element) {
+            /* 訪問回数ボタンの選択状態をリセット */
+            document.getElementById('firstmr').classList.remove('active');
+            document.getElementById('repeatmr').classList.remove('active');
+            /* クリックされたボタンを選択状態にする */
+            element.classList.add('active');
+            /* 選択された訪問回数を変数に格納 */
+            mrCount = element.innerText;
+        }
+
+        function selectirradiations(element) {
+            /* 訪問回数ボタンの選択状態をリセット */
+            document.getElementById('firstirradiations').classList.remove('active');
+            document.getElementById('repeatirradiations').classList.remove('active');
+            /* クリックされたボタンを選択状態にする */
+            element.classList.add('active');
+            /* 選択された訪問回数を変数に格納 */
+            irradiationsCount = element.innerText;
+        }
+
+        function showMenu(menu) {
+            document.querySelectorAll('.menu-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(menu).classList.add('active');
+        }
+
+        function selectSymptom(element) {
+            /* 全ての症状ボタンの選択状態をリセット */
+            const allSymptoms = document.querySelectorAll('.symptoms button');
+            allSymptoms.forEach(symptom => {
+                symptom.classList.remove('active');
+            });
+            /* クリックされたボタンを選択状態にする */
+            element.classList.add('active');
+            /* 選択された症状を変数に格納 */
+            selectedSymptom = element.innerText;
+        }
+
+        function submitForm() {
+            /* フォームの入力値を取得 */
+            const name = document.getElementById('name').value;
+            const name1 = document.getElementById('name').value;
+            const name2 = document.getElementById('name').value;
+            const name3 = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const date1 = formatDate(document.getElementById('date1').value);
+            const date2 = formatDate(document.getElementById('date2').value);
+            const message = document.getElementById('message').value;
+            const message2 = document.getElementById('message2').value;
+            const message3 = document.getElementById('message3').value;
+            const message4 = document.getElementById('message4').value;
+
+            /* フォームデータをオブジェクトにまとめる */
+            const formData = {
+                name,
+                name2,
+                name3,
+                name4,
+                phone,
+                visitCount,
+                mrCount,
+                selectedSymptom,
+                irradiationsCount,
+                dates: [date1, date2],
+                message,
+                message2,
+                message3,
+                message4
+            };
+
+            // LINEトークにメッセージを送信
+            liff.sendMessages([{
+                type: 'text',
+                text: `≪アンケート≫\n【名前】：${formData.message}\n【電話番号】：${formData.message2}\n【住所】：${formData.message3}\n【生年月日】：${formData.message4}`
+            }]).then(() => {
+                /* メッセージ送信成功時の処理 */
+                alert('当日のキャンセルは無いようにお願いいたします。');
+                /* LIFFウィンドウを閉じる */
+                liff.closeWindow();
+            }).catch((err) => {
+                /* メッセージ送信失敗時の処理 */
+                console.error('メッセージの送信に失敗しました', err);
+            });
+        }
+
+        function formatDate(datetime) {
+            /* 日時文字列が空の場合は空文字を返す */
+            if (!datetime) return '';
+
+            /* 日時文字列をDateオブジェクトに変換 */
+            const date = new Date(datetime);
+
+            /* 年、月、日、時、分を取得しフォーマット */
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            const hours = ('0' + date.getHours()).slice(-2);
+            const minutes = ('0' + date.getMinutes()).slice(-2);
+
+            /* 曜日を取得 */
+            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            const weekday = weekdays[date.getDay()];
+
+            /* フォーマットした文字列を返す */
+            return `${year}年${month}月${day}日 (${weekday}) ${hours}:${minutes}`;
+        }
+
+    </script>
 </body>
+
 </html>
-"# testfoam" 
-"# testfoam" 
-"# testfoam" 
